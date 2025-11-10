@@ -1,0 +1,277 @@
+package com.sayra.umai.service;
+
+import com.sayra.umai.model.dto.JWTResponse;
+import com.sayra.umai.model.dto.LoginDTO;
+import com.sayra.umai.model.dto.UserDTO;
+import com.sayra.umai.model.entity.user.Role;
+import com.sayra.umai.model.entity.user.UserEntity;
+import com.sayra.umai.repo.RoleRepo;
+import com.sayra.umai.repo.UserEntityRepo;
+import com.sayra.umai.model.request.ChangePasswordRequest;
+import com.sayra.umai.config.UserAlreadyExistsException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.Duration;
+import java.util.*;
+
+@Slf4j
+@Service
+public class UserService {
+    final AuthenticationManager authManager;
+    private final JWTService jwtService;
+    private final PasswordEncoder encoder;
+    private final UserEntityRepo userEntityRepo;
+    private final RoleRepo roleRepo;
+    private final DropboxService dropboxService;
+
+    @Value( "${umai.app.isproduction}")
+    private boolean isProduction;
+
+    public UserService(UserEntityRepo userEntityRepo,
+                       JWTService jwtService,
+                       AuthenticationManager authManager,
+                       PasswordEncoder encoder,
+                       RoleRepo roleRepo,
+                       DropboxService dropboxService) {
+        this.userEntityRepo = userEntityRepo;
+        this.jwtService = jwtService;
+        this.authManager = authManager;
+        this.encoder = encoder;
+        this.roleRepo = roleRepo;
+        this.dropboxService = dropboxService;
+    }
+
+    public UserEntity getCurrentUser(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userEntityRepo.findByUsername(username).orElseThrow(
+                ()-> new IllegalStateException("User not found"));
+    }
+
+    public UserDTO register(UserDTO userDTO){
+        if(userEntityRepo.findByUsername(userDTO.getUsername()).isPresent()){
+            System.out.println("Username already exists");
+            throw new UserAlreadyExistsException("Username already exists");
+        }
+        if(userEntityRepo.existsByEmail(userDTO.getEmail())){
+            System.out.println("Email already was registered");
+            throw new UserAlreadyExistsException("Email already was registered");
+        }
+        if(userDTO.getUsername() == null || userDTO.getPassword() == null || userDTO.getEmail() == null){
+            throw new IllegalArgumentException("Invalid username/email/password");
+        }
+        if(userDTO.getPassword().length()<8){
+            throw new IllegalArgumentException("Password must be at least 8 characters long");
+
+        }
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(userDTO.getUsername());
+        userEntity.setPassword(encoder.encode(userDTO.getPassword()));
+        userEntity.setEmail(userDTO.getEmail());
+
+        Role userRole = roleRepo.findByName("ROLE_USER").orElseThrow(
+                ()-> new IllegalStateException("Role not found"));
+        List<Role> roles = new ArrayList<>();
+        roles.add(userRole);
+        userEntity.setRoles(roles);
+
+        userEntityRepo.save(userEntity);
+
+        userDTO.setPassword(null);
+        return userDTO;
+    }
+    public JWTResponse login(LoginDTO loginDTO, HttpServletResponse response) {
+        try{
+            Authentication authentication = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword())
+            );
+            String accessToken = jwtService.generateToken(authentication);
+            String refreshToken = jwtService.generateRefreshToken(authentication);
+            ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
+                    .httpOnly(true)
+                    .secure(isProduction)        // true в проде с HTTPS
+                    .path("/api/users")                  // путь, где cookie доступна
+                    .sameSite(isProduction ? "Strict" : "Lax") // либо "Lax" в зависимости от фронта
+                    .maxAge(Duration.ofDays(7))
+                    .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+            return new JWTResponse(accessToken);
+        } catch (AuthenticationException e){
+            throw new BadCredentialsException("Invalid username or password");
+        }
+
+    }
+    public void changePassword(ChangePasswordRequest changePasswordRequest){
+        if(changePasswordRequest.getOldPassword() == null || changePasswordRequest.getNewPassword() == null){
+            throw new IllegalArgumentException("Invalid old password or new password");
+        }if(changePasswordRequest.getOldPassword().equals(changePasswordRequest.getNewPassword())){
+            throw new IllegalArgumentException("Old password and new password are the same");
+        }
+        if(changePasswordRequest.getNewPassword().length() < 8){
+            throw new IllegalArgumentException("Password must be at least 8 characters long");
+        }
+        UserEntity userEntity = getCurrentUser();
+        if(!encoder.matches(changePasswordRequest.getOldPassword(), userEntity.getPassword())){
+            throw new BadCredentialsException("Invalid old password");
+        }
+        if(encoder.matches(changePasswordRequest.getNewPassword(), userEntity.getPassword())){
+            throw new IllegalArgumentException("New password must be different from old password");
+        }
+        userEntity.setPassword(encoder.encode(changePasswordRequest.getNewPassword()));
+        userEntityRepo.save(userEntity);
+    }
+    public void logout(HttpServletResponse response){
+        Cookie cookie = new Cookie("refresh_token", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(isProduction);
+        cookie.setPath("/api/users");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
+    public JWTResponse refreshToken(HttpServletRequest request,
+                                    HttpServletResponse response){
+        try{
+            String refreshToken = getRefreshTokenFromCookie(request);
+            if(refreshToken == null){
+                log.warn("Refresh token is null");
+                throw new BadCredentialsException("Refresh token is missing");
+            }
+            String username = jwtService.extractUserName(refreshToken);
+            if(username == null || jwtService.isTokenExpired(refreshToken)){
+                log.warn("Refresh attempt failed for user={} from IP={}", username, request.getRemoteAddr());
+                throw new BadCredentialsException("Invalid refresh token");
+            }
+            Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, null);
+
+            String newAccessToken = jwtService.generateToken(authentication);
+            String newRefreshToken = jwtService.generateRefreshToken(authentication);
+            ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", newRefreshToken)
+                    .httpOnly(true)
+                    .secure(isProduction)
+                    .path("/api/users")
+                    .sameSite(isProduction ? "Strict" : "Lax")
+                    .maxAge(Duration.ofDays(7))
+                    .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+            return new JWTResponse(newAccessToken);
+
+        } catch(Exception e){
+            throw new BadCredentialsException("Invalid refresh token");
+        }
+
+    }
+
+
+    private String getRefreshTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refresh_token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Загружает фото профиля пользователя в Dropbox
+     * @param profilePhoto файл фото профиля
+     * @return URL загруженного фото
+     */
+    public String uploadProfilePhoto(MultipartFile profilePhoto) {
+        UserEntity currentUser = getCurrentUser();
+        
+        if (profilePhoto == null || profilePhoto.isEmpty()) {
+            throw new IllegalArgumentException("Profile photo is required");
+        }
+
+        try {
+            // Удаляем старое фото, если оно есть
+            if (currentUser.getProfilePhotoUrl() != null && !currentUser.getProfilePhotoUrl().isEmpty()) {
+                deleteProfilePhoto();
+            }
+
+            // Загружаем новое фото в Dropbox
+            String photoUrl = dropboxService.uploadFile(profilePhoto, "profiles/" + currentUser.getUsername());
+            currentUser.setProfilePhotoUrl(photoUrl);
+            userEntityRepo.save(currentUser);
+            
+            return photoUrl;
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при загрузке фото профиля в Dropbox: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Удаляет фото профиля пользователя
+     */
+    public void deleteProfilePhoto() {
+        UserEntity currentUser = getCurrentUser();
+        
+        if (currentUser.getProfilePhotoUrl() != null && !currentUser.getProfilePhotoUrl().isEmpty()) {
+            try {
+                // Извлекаем путь к файлу из URL для удаления из Dropbox
+                String filePath = extractFilePathFromUrl(currentUser.getProfilePhotoUrl());
+                if (filePath != null) {
+                    dropboxService.deleteFile(filePath);
+                }
+            } catch (Exception e) {
+                // Логируем ошибку, но не прерываем выполнение
+                log.error("Ошибка при удалении фото профиля из Dropbox: {}", e.getMessage());
+            }
+        }
+
+        currentUser.setProfilePhotoUrl(null);
+        userEntityRepo.save(currentUser);
+    }
+
+    /**
+     * Получает информацию о текущем пользователе с фото профиля
+     * @return UserDTO с информацией о пользователе
+     */
+    public UserDTO getCurrentUserInfo() {
+        UserEntity currentUser = getCurrentUser();
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(currentUser.getUsername());
+        userDTO.setEmail(currentUser.getEmail());
+        userDTO.setProfilePhotoUrl(currentUser.getProfilePhotoUrl());
+        return userDTO;
+    }
+
+    /**
+     * Извлекает путь к файлу из Dropbox URL
+     * @param url URL файла в Dropbox
+     * @return путь к файлу или null если не удалось извлечь
+     */
+    private String extractFilePathFromUrl(String url) {
+        try {
+            // URL выглядит как: https://www.dropbox.com/s/.../filename?raw=1
+            // Нужно извлечь путь к файлу
+            if (url.contains("dropbox.com")) {
+                // Простое извлечение - в реальном проекте может потребоваться более сложная логика
+                return null; // Пока возвращаем null, так как для удаления нужен точный путь
+            }
+        } catch (Exception e) {
+            log.error("Ошибка при извлечении пути из URL: {}", e.getMessage());
+        }
+        return null;
+    }
+
+
+}
