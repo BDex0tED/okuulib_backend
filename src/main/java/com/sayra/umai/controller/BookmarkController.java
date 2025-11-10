@@ -1,6 +1,7 @@
 package com.sayra.umai.controller;
 
 import com.sayra.umai.model.request.BookmarkRequest;
+import com.sayra.umai.service.BookmarkService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

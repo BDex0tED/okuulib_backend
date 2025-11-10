@@ -1,4 +1,4 @@
-package com.sayra.umai.controller;
+package com.sayra.umai.service;
 
 import com.sayra.umai.model.entity.user.UserEntity;
 import com.sayra.umai.repo.UserEntityRepo;

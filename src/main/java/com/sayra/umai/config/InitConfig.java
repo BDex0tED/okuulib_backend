@@ -1,6 +1,6 @@
 package com.sayra.umai.config;
 
-import com.sayra.umai.controller.GenreService;
+import com.sayra.umai.service.GenreService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

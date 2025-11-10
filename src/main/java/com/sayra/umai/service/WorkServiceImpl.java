@@ -1,10 +1,10 @@
-package com.sayra.umai.controller;
+package com.sayra.umai.service;
 
+import com.sayra.umai.service.PdfService;
 import com.sayra.umai.model.entity.dto.AllWorksDTO;
 import com.sayra.umai.model.entity.dto.GenreDTO;
 import com.sayra.umai.model.entity.work.*;
 import com.sayra.umai.model.response.*;
-import com.sayra.umai.service.DropboxService;
 import com.sayra.umai.model.entity.dto.ChunkType;
 import com.sayra.umai.model.entity.dto.WorkStatus;
 import com.sayra.umai.repo.AuthorRepo;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class WorkServiceImpl {
+public class WorkServiceImpl implements WorkService {
     private final PdfService pdfService;
     private final WorkRepo workRepo;
     private final ChapterRepo chapterRepo;

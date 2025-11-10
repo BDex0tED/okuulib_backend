@@ -1,4 +1,4 @@
-package com.sayra.umai.controller;
+package com.sayra.umai.service;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDestinationNameTreeNode;

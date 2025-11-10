@@ -4,6 +4,7 @@ import com.sayra.umai.model.entity.dto.AllWorksDTO;
 import com.sayra.umai.model.response.WorkResponse;
 import com.sayra.umai.model.entity.work.Work;
 import com.sayra.umai.model.entity.dto.WorkStatus;
+import com.sayra.umai.service.WorkServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.sayra.umai.controller.impl;
+package com.sayra.umai.service;
 
 import com.sayra.umai.model.entity.dto.AllWorksDTO;
 import com.sayra.umai.model.response.WorkResponse;
@@ -8,6 +8,6 @@ import java.util.List;
 public interface WorkService {
     List<AllWorksDTO> getAllWorks();
 
-    WorkResponse getWorkById(Long workId);
+    WorkResponse findById(Long workId);
 
 }

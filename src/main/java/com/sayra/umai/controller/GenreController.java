@@ -3,6 +3,7 @@ package com.sayra.umai.controller;
 import com.sayra.umai.model.entity.dto.GenreDTO;
 import com.sayra.umai.model.response.GenreResponse;
 import com.sayra.umai.model.entity.work.Genre;
+import com.sayra.umai.service.GenreService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
