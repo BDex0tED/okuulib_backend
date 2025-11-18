@@ -3,7 +3,7 @@ package com.sayra.umai.controller;
 import com.sayra.umai.model.dto.JWTResponse;
 import com.sayra.umai.model.dto.LoginDTO;
 import com.sayra.umai.model.dto.UserDTO;
-import com.sayra.umai.service.UserService;
+import com.sayra.umai.service.impl.UserService;
 import com.sayra.umai.model.request.ChangePasswordRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

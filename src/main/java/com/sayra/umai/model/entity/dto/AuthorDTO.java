@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.net.URL;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,6 +16,6 @@ public class AuthorDTO {
     private String bio;
     private String dateOfBirth;
     private URL wiki;
-    private Set<WorkDTO> works;
+    private List<WorkDTO> works;
 
 }

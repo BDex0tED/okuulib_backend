@@ -1,4 +1,4 @@
-package com.sayra.umai.service;
+package com.sayra.umai.service.impl;
 
 import com.sayra.umai.model.dto.JWTResponse;
 import com.sayra.umai.model.dto.LoginDTO;
@@ -9,6 +9,7 @@ import com.sayra.umai.repo.RoleRepo;
 import com.sayra.umai.repo.UserEntityRepo;
 import com.sayra.umai.model.request.ChangePasswordRequest;
 import com.sayra.umai.config.UserAlreadyExistsException;
+import com.sayra.umai.service.jwt.JWTService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,7 +38,7 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final UserEntityRepo userEntityRepo;
     private final RoleRepo roleRepo;
-    private final DropboxService dropboxService;
+    private final DropboxServiceImpl dropboxServiceImpl;
 
     @Value( "${umai.app.isproduction}")
     private boolean isProduction;
@@ -47,13 +48,13 @@ public class UserService {
                        AuthenticationManager authManager,
                        PasswordEncoder encoder,
                        RoleRepo roleRepo,
-                       DropboxService dropboxService) {
+                       DropboxServiceImpl dropboxServiceImpl) {
         this.userEntityRepo = userEntityRepo;
         this.jwtService = jwtService;
         this.authManager = authManager;
         this.encoder = encoder;
         this.roleRepo = roleRepo;
-        this.dropboxService = dropboxService;
+        this.dropboxServiceImpl = dropboxServiceImpl;
     }
 
     public UserEntity getCurrentUser(){
@@ -196,7 +197,7 @@ public class UserService {
      */
     public String uploadProfilePhoto(MultipartFile profilePhoto) {
         UserEntity currentUser = getCurrentUser();
-        
+
         if (profilePhoto == null || profilePhoto.isEmpty()) {
             throw new IllegalArgumentException("Profile photo is required");
         }
@@ -208,10 +209,10 @@ public class UserService {
             }
 
             // Загружаем новое фото в Dropbox
-            String photoUrl = dropboxService.uploadFile(profilePhoto, "profiles/" + currentUser.getUsername());
+            String photoUrl = dropboxServiceImpl.uploadFile(profilePhoto, "profiles/" + currentUser.getUsername());
             currentUser.setProfilePhotoUrl(photoUrl);
             userEntityRepo.save(currentUser);
-            
+
             return photoUrl;
         } catch (Exception e) {
             throw new RuntimeException("Ошибка при загрузке фото профиля в Dropbox: " + e.getMessage());
@@ -223,13 +224,13 @@ public class UserService {
      */
     public void deleteProfilePhoto() {
         UserEntity currentUser = getCurrentUser();
-        
+
         if (currentUser.getProfilePhotoUrl() != null && !currentUser.getProfilePhotoUrl().isEmpty()) {
             try {
                 // Извлекаем путь к файлу из URL для удаления из Dropbox
                 String filePath = extractFilePathFromUrl(currentUser.getProfilePhotoUrl());
                 if (filePath != null) {
-                    dropboxService.deleteFile(filePath);
+                    dropboxServiceImpl.deleteFile(filePath);
                 }
             } catch (Exception e) {
                 // Логируем ошибку, но не прерываем выполнение

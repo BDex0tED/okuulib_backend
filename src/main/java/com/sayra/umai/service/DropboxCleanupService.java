@@ -1,5 +1,6 @@
 package com.sayra.umai.service;
 
+import com.sayra.umai.service.impl.DropboxServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class DropboxCleanupService {
 
-    private final DropboxService dropboxService;
+    private final DropboxServiceImpl dropboxServiceImpl;
 
     @Value("${dropbox.cleanup.enabled:true}")
     private boolean cleanupEnabled;
@@ -18,8 +19,8 @@ public class DropboxCleanupService {
     @Value("${dropbox.cleanup.days-old:7}")
     private int daysOld;
 
-    public DropboxCleanupService(DropboxService dropboxService) {
-        this.dropboxService = dropboxService;
+    public DropboxCleanupService(DropboxServiceImpl dropboxServiceImpl) {
+        this.dropboxServiceImpl = dropboxServiceImpl;
     }
 
     /**
@@ -34,19 +35,19 @@ public class DropboxCleanupService {
 
         try {
             System.out.println("Starting Dropbox cleanup at " + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            
+
             // Очищаем временные файлы в разных папках
-            int deletedCovers = dropboxService.cleanOldTempFiles("covers", daysOld);
-            int deletedProfiles = dropboxService.cleanOldTempFiles("profiles", daysOld);
-            int deletedTemp = dropboxService.cleanOldTempFiles("temp", daysOld);
-            
+            int deletedCovers = dropboxServiceImpl.cleanOldTempFiles("covers", daysOld);
+            int deletedProfiles = dropboxServiceImpl.cleanOldTempFiles("profiles", daysOld);
+            int deletedTemp = dropboxServiceImpl.cleanOldTempFiles("temp", daysOld);
+
             int totalDeleted = deletedCovers + deletedProfiles + deletedTemp;
-            
+
             System.out.println("Dropbox cleanup completed. Deleted files: " + totalDeleted);
             System.out.println("- Covers: " + deletedCovers);
             System.out.println("- Profiles: " + deletedProfiles);
             System.out.println("- Temp: " + deletedTemp);
-            
+
         } catch (Exception e) {
             System.err.println("Error during Dropbox cleanup: " + e.getMessage());
             e.printStackTrace();
@@ -67,7 +68,7 @@ public class DropboxCleanupService {
 
         try {
             System.out.println("Manual cleanup started for folder: " + subfolder + ", days old: " + daysOld);
-            int deletedCount = dropboxService.cleanOldTempFiles(subfolder, daysOld);
+            int deletedCount = dropboxServiceImpl.cleanOldTempFiles(subfolder, daysOld);
             System.out.println("Manual cleanup completed. Deleted files: " + deletedCount);
             return deletedCount;
         } catch (Exception e) {
@@ -89,16 +90,16 @@ public class DropboxCleanupService {
 
         try {
             System.out.println("Full cleanup started at " + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            
-            int deletedCovers = dropboxService.cleanOldTempFiles("covers", daysOld);
-            int deletedProfiles = dropboxService.cleanOldTempFiles("profiles", daysOld);
-            int deletedTemp = dropboxService.cleanOldTempFiles("temp", daysOld);
-            
+
+            int deletedCovers = dropboxServiceImpl.cleanOldTempFiles("covers", daysOld);
+            int deletedProfiles = dropboxServiceImpl.cleanOldTempFiles("profiles", daysOld);
+            int deletedTemp = dropboxServiceImpl.cleanOldTempFiles("temp", daysOld);
+
             int totalDeleted = deletedCovers + deletedProfiles + deletedTemp;
-            
+
             System.out.println("Full cleanup completed. Total deleted files: " + totalDeleted);
             return totalDeleted;
-            
+
         } catch (Exception e) {
             System.err.println("Error during full Dropbox cleanup: " + e.getMessage());
             e.printStackTrace();

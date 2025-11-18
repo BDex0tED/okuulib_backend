@@ -1,4 +1,4 @@
-package com.sayra.umai.service;
+package com.sayra.umai.service.jwt;
 
 import com.sayra.umai.security.jwt.SecurityConstants;
 import org.springframework.beans.factory.annotation.Value;

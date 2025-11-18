@@ -4,57 +4,58 @@ import com.sayra.umai.model.entity.dto.AuthorDTO;
 import com.sayra.umai.model.request.AuthorRequest;
 import com.sayra.umai.model.entity.dto.WorkDTO;
 import com.sayra.umai.model.entity.work.Author;
-import com.sayra.umai.repo.AuthorRepo;
+import com.sayra.umai.repo_service.AuthorDataService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class AuthorService {
-    private AuthorRepo authorRepo;
+    private final AuthorDataService authorDataService;
 
 
-    public AuthorService(AuthorRepo authorRepo) {
-        this.authorRepo = authorRepo;
+    public AuthorService(AuthorDataService authorDataService) {
+        this.authorDataService = authorDataService;
     }
 
-    @Transactional(readOnly = true)
-    public Set<AuthorDTO> getAllAuthors() {
+  @Transactional(readOnly = true)
+  public List<AuthorDTO> getAllAuthors() {
 
-        Set<Author> authors = authorRepo.findAllWithWorks();
+    List<Author> authors = authorDataService.findAllWithWorks();
 
-        return authors.stream()
-                .map(author -> {
+    return authors.stream()
+      .map(author -> {
 
-                    Set<WorkDTO> worksDTO = author.getWorks().stream()
-                            .map(work -> new WorkDTO(
-                                    work.getId(),
-                                    work.getTitle(),
-                                    work.getDescription()
-                            ))
-                            .collect(Collectors.toSet());
+        List<WorkDTO> worksDTO = author.getWorks().stream()
+          .map(work -> new WorkDTO(
+            work.getId(),
+            work.getTitle(),
+            work.getDescription()
+          ))
+          .collect(Collectors.toList());
 
-                    AuthorDTO authorDTO = new AuthorDTO();
-                    authorDTO.setId(author.getId());
-                    authorDTO.setName(author.getName());
-                    authorDTO.setBio(author.getBio());
+        AuthorDTO dto = new AuthorDTO();
+        dto.setId(author.getId());
+        dto.setName(author.getName());
+        dto.setBio(author.getBio());
+        dto.setDateOfBirth(author.getDate());
+        dto.setWiki(author.getWiki());
+        dto.setWorks(worksDTO);
 
-                    authorDTO.setDateOfBirth(author.getDate());
-                    authorDTO.setWiki(author.getWiki());
-                    authorDTO.setWorks(worksDTO);
+        return dto;
+      })
+      .collect(Collectors.toList());
+  }
 
-                    return authorDTO;
-                })
-                .collect(Collectors.toSet());
-    }
 
-    public Author save(AuthorRequest authorRequest) {
+
+  public Author save(AuthorRequest authorRequest) {
         if(authorRequest.getName() == null || authorRequest.getName().equals("")){
             throw new IllegalArgumentException("Author name is required");
         }
-        if(authorRepo.findByName(authorRequest.getName()).isPresent()){
+        if(authorDataService.existsByName(authorRequest.getName())){
             throw new IllegalArgumentException("Author with name: "+ authorRequest.getName()+" already exists");
         }
         Author author = new Author();
@@ -65,7 +66,7 @@ public class AuthorService {
         author.setPhoto(authorRequest.getPhoto());
 //        author.setPhoto(authorInDTO.getPhoto()); should be in db then the url
 //        author.setWorks(); need to be done
-        authorRepo.save(author);
+        authorDataService.save(author);
         return author;
 
 

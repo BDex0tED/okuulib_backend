@@ -4,11 +4,12 @@ import com.sayra.umai.model.entity.dto.GenreDTO;
 import com.sayra.umai.model.response.GenreResponse;
 import com.sayra.umai.model.entity.work.Genre;
 import com.sayra.umai.service.GenreService;
+import com.sayra.umai.service.impl.GenreServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.util.List;
 
 @RestController()
 @RequestMapping("/genre")
@@ -18,7 +19,7 @@ public class GenreController {
         this.genreService = genreService;
     }
     @GetMapping()
-    public ResponseEntity<Set<GenreDTO>> getAllGenre(){
+    public ResponseEntity<List<GenreDTO>> getAllGenre(){
         return ResponseEntity.ok(this.genreService.getAllGenre());
     }
 
@@ -31,10 +32,15 @@ public class GenreController {
         return ResponseEntity.status(HttpStatus.CREATED).body(genreResponse);
     }
 
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteGenre(@PathVariable Long id){
         genreService.deleteGenre(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Genre> getGenreById(@PathVariable Long id){
+        return ResponseEntity.ok(genreService.getGenreById(id));
     }
 }

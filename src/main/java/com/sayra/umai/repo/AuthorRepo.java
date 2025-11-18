@@ -13,9 +13,8 @@ import java.util.Set;
 public interface AuthorRepo extends JpaRepository<Author, Long> {
     Optional<Author> findByName(String name);
 
-    Optional<Author> findById(Long id);
+  @Query("SELECT DISTINCT a FROM Author a LEFT JOIN FETCH a.works")
+  List<Author> findAllWithWorks();
 
-    List<Author> findAll();
-    @Query("SELECT DISTINCT a FROM Author a LEFT JOIN FETCH a.works")
-    Set<Author> findAllWithWorks();
+  boolean existsByName(String name);
 }

@@ -1,9 +1,9 @@
 package com.sayra.umai.controller;
 
 import com.sayra.umai.service.DropboxCleanupService;
-import com.sayra.umai.service.DropboxService;
-import com.sayra.umai.service.UserService;
-import com.sayra.umai.service.WorkServiceImpl;
+import com.sayra.umai.service.impl.DropboxServiceImpl;
+import com.sayra.umai.service.impl.UserService;
+import com.sayra.umai.service.impl.WorkServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,16 +16,16 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class DropboxController {
 
-    private final DropboxService dropboxService;
+    private final DropboxServiceImpl dropboxServiceImpl;
     private final DropboxCleanupService cleanupService;
     private final UserService userService;
     private final WorkServiceImpl workServiceImpl;
 
-    public DropboxController(DropboxService dropboxService, 
-                           DropboxCleanupService cleanupService,
-                           UserService userService,
-                           WorkServiceImpl workServiceImpl) {
-        this.dropboxService = dropboxService;
+    public DropboxController(DropboxServiceImpl dropboxServiceImpl,
+                             DropboxCleanupService cleanupService,
+                             UserService userService,
+                             WorkServiceImpl workServiceImpl) {
+        this.dropboxServiceImpl = dropboxServiceImpl;
         this.cleanupService = cleanupService;
         this.userService = userService;
         this.workServiceImpl = workServiceImpl;
@@ -41,9 +41,9 @@ public class DropboxController {
     public ResponseEntity<Map<String, String>> uploadFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam("subfolder") String subfolder) {
-        
+
         try {
-            String fileUrl = dropboxService.uploadFile(file, subfolder);
+            String fileUrl = dropboxServiceImpl.uploadFile(file, subfolder);
             Map<String, String> response = new HashMap<>();
             response.put("url", fileUrl);
             response.put("message", "File uploaded successfully");
@@ -63,7 +63,7 @@ public class DropboxController {
     @PostMapping("/upload-profile-photo")
     public ResponseEntity<Map<String, String>> uploadProfilePhoto(
             @RequestParam("profilePhoto") MultipartFile profilePhoto) {
-        
+
         try {
             String photoUrl = userService.uploadProfilePhoto(profilePhoto);
             Map<String, String> response = new HashMap<>();
@@ -104,7 +104,7 @@ public class DropboxController {
     public ResponseEntity<Map<String, String>> uploadCover(
             @PathVariable Long workId,
             @RequestParam("coverImage") MultipartFile coverImage) {
-        
+
         try {
             String coverUrl = workServiceImpl.uploadCover(workId, coverImage);
             Map<String, String> response = new HashMap<>();
@@ -146,7 +146,7 @@ public class DropboxController {
     public ResponseEntity<Map<String, Object>> manualCleanup(
             @RequestParam("subfolder") String subfolder,
             @RequestParam(value = "daysOld", defaultValue = "7") int daysOld) {
-        
+
         try {
             int deletedCount = cleanupService.manualCleanup(subfolder, daysOld);
             Map<String, Object> response = new HashMap<>();
@@ -189,7 +189,7 @@ public class DropboxController {
     @GetMapping("/file-exists")
     public ResponseEntity<Map<String, Object>> fileExists(@RequestParam("filePath") String filePath) {
         try {
-            boolean exists = dropboxService.fileExists(filePath);
+            boolean exists = dropboxServiceImpl.fileExists(filePath);
             Map<String, Object> response = new HashMap<>();
             response.put("exists", exists);
             response.put("filePath", filePath);
