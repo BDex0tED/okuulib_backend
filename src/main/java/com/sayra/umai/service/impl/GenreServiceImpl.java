@@ -5,8 +5,8 @@ import com.sayra.umai.model.entity.work.Genre;
 import com.sayra.umai.repo.GenreRepo;
 import com.sayra.umai.service.GenreService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,6 +18,7 @@ public class GenreServiceImpl implements GenreService {
         this.genreRepo = genreRepo;
     }
 
+    @Transactional(readOnly=true)
     public List<GenreDTO> getAllGenre() {
         List<GenreDTO> allGenres = new ArrayList<>();
         for (Genre genre : genreRepo.findAll()) {
@@ -29,6 +30,7 @@ public class GenreServiceImpl implements GenreService {
 
         return allGenres;
     }
+    @Transactional(readOnly=true)
     public Genre getGenreById(Long genreId) {
       return genreRepo.findById(genreId).orElseThrow(EntityNotFoundException::new);
     }

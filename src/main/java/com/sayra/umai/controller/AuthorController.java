@@ -3,7 +3,7 @@ package com.sayra.umai.controller;
 import com.sayra.umai.model.entity.dto.AuthorDTO;
 import com.sayra.umai.model.request.AuthorRequest;
 import com.sayra.umai.model.entity.work.Author;
-import com.sayra.umai.service.AuthorService;
+import com.sayra.umai.service.impl.AuthorServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +16,8 @@ import java.util.List;
 
 @RestController("/author")
 public class AuthorController {
-    private AuthorService authorService;
-    public AuthorController(AuthorService authorService) {
+    private AuthorServiceImpl authorService;
+    public AuthorController(AuthorServiceImpl authorService) {
         this.authorService = authorService;
     }
 

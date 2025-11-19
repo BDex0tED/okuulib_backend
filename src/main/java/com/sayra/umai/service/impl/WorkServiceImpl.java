@@ -11,8 +11,8 @@
   import com.sayra.umai.model.entity.dto.WorkStatus;
   import com.sayra.umai.service.*;
   import jakarta.persistence.EntityNotFoundException;
-  import jakarta.transaction.Transactional;
   import org.springframework.stereotype.Service;
+  import org.springframework.transaction.annotation.Transactional;
   import org.springframework.web.multipart.MultipartFile;
 
   import java.io.File;
@@ -49,18 +49,19 @@
       }
 
       @Override
+      @Transactional(readOnly=true)
       public List<AllWorksDTO> getAllWorks() {
         List<Work> works = workDataService.findAllWithGenresAndAuthor();
         works.sort(Comparator.comparing(Work::getTitle, Comparator.nullsLast(String::compareToIgnoreCase)).thenComparing(Work::getId));
         return workMapper.worksToAllWorksDTOs(works);
       }
-
-
     @Override
+    @Transactional(readOnly=true)
     public WorkResponse findById(Long id) throws EntityNotFoundException {
         return workMapper.workToWorkResponse(workDataService.findByIdOrThrow(id));
     }
 
+    @Transactional(readOnly=true)
     public List<AllWorksDTO> searchWorks(String query,
                                            Long authorId,
                                            List<Long> genreIds,
