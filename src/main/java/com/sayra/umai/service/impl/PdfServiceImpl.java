@@ -1,7 +1,7 @@
 package com.sayra.umai.service.impl;
 
-import com.sayra.umai.model.entity.dto.ChunkType;
-import com.sayra.umai.model.entity.dto.WorkStatus;
+import com.sayra.umai.model.dto.ChunkType;
+import com.sayra.umai.model.dto.WorkStatus;
 import com.sayra.umai.model.entity.work.*;
 import com.sayra.umai.repo_service.AuthorDataService;
 import com.sayra.umai.repo_service.GenreDataService;
@@ -10,22 +10,11 @@ import com.sayra.umai.service.DropboxService;
 import com.sayra.umai.service.PdfService;
 import com.sayra.umai.service.PdfTextService;
 import jakarta.transaction.Transactional;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDestinationNameTreeNode;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.*;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
-import org.apache.pdfbox.text.PDFTextStripper;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 

@@ -1,7 +1,7 @@
 package com.sayra.umai.model.entity.work;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.sayra.umai.model.entity.dto.WorkStatus;
+import com.sayra.umai.model.dto.WorkStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

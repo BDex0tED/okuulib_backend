@@ -1,6 +1,6 @@
 package com.sayra.umai.service.impl;
 
-import com.sayra.umai.model.entity.dto.GenreDTO;
+import com.sayra.umai.model.dto.GenreDTO;
 import com.sayra.umai.model.entity.work.Genre;
 import com.sayra.umai.repo.GenreRepo;
 import com.sayra.umai.service.GenreService;

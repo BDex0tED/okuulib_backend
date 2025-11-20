@@ -5,9 +5,9 @@ import com.sayra.umai.repo.AuthorRepo;
 import com.sayra.umai.repo_service.AuthorDataService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AuthorDataServiceImpl implements AuthorDataService {
@@ -18,15 +18,18 @@ public class AuthorDataServiceImpl implements AuthorDataService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public Author findByNameOrThrow(String name) {
     return authorRepo.findByName(name).orElseThrow(() -> new EntityNotFoundException("Author with name " + name + " not found"));
   }
   @Override
+  @Transactional
   public Author save(Author author) {
     return authorRepo.save(author);
   }
 
   @Override
+  @Transactional(readOnly = true)
   public boolean existsByName(String name){
     return authorRepo.existsByName(name);
   }

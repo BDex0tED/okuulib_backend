@@ -1,9 +1,8 @@
 package com.sayra.umai.service;
 
-import com.sayra.umai.model.entity.dto.AllWorksDTO;
-import com.sayra.umai.model.entity.dto.GenreDTO;
+import com.sayra.umai.model.dto.AllWorksDTO;
+import com.sayra.umai.model.dto.GenreDTO;
 import com.sayra.umai.model.entity.work.*;
-import com.sayra.umai.model.dto.*; // Новые DTO
 import com.sayra.umai.model.response.AuthorResponse;
 import com.sayra.umai.model.response.ChapterResponse;
 import com.sayra.umai.model.response.ChunkResponse;

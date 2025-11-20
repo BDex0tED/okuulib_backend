@@ -1,17 +1,19 @@
-package com.sayra.umai.repo;
+package com.sayra.umai.repo_service;
 
 import com.sayra.umai.model.entity.user.UserEntity;
 import com.sayra.umai.model.entity.work.ChatSession;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface ChatSessionRepo extends JpaRepository<ChatSession, Long> {
+public interface ChatSessionDataService {
     List<ChatSession> findAllByUser(UserEntity user);
 
     Optional<ChatSession> findByUserUsernameAndId(String username, Long id);
 
     Optional<ChatSession> findByIdAndUser(Long id, UserEntity user);
+
+    ChatSession save(ChatSession chatSession);
+
+    void delete(ChatSession chatSession);
 }

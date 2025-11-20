@@ -1,10 +1,7 @@
 package com.sayra.umai.repo_service.impl;
 
-import com.sayra.umai.model.entity.work.Author;
 import com.sayra.umai.model.entity.work.Chapter;
 import com.sayra.umai.model.entity.work.Work;
-import com.sayra.umai.repo.AuthorRepo;
-import com.sayra.umai.repo.GenreRepo;
 import com.sayra.umai.repo.WorkRepo;
 import com.sayra.umai.repo_service.WorkDataService;
 import jakarta.transaction.Transactional;

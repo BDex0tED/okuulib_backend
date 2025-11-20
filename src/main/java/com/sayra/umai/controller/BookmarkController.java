@@ -1,7 +1,7 @@
 package com.sayra.umai.controller;
 
 import com.sayra.umai.model.request.BookmarkRequest;
-import com.sayra.umai.service.BookmarkService;
+import com.sayra.umai.service.impl.BookmarkServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,8 +11,8 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/bookmarks")
 public class BookmarkController {
-    private final BookmarkService bookmarkService;
-    public BookmarkController(BookmarkService bookmarkService) {
+    private final BookmarkServiceImpl bookmarkService;
+    public BookmarkController(BookmarkServiceImpl bookmarkService) {
         this.bookmarkService = bookmarkService;
     }
     @PostMapping("/create")

@@ -1,4 +1,4 @@
-package com.sayra.umai.config;
+package com.sayra.umai.exception;
 
 public class UserAlreadyExistsException extends RuntimeException {
     public UserAlreadyExistsException(String message) {

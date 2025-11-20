@@ -1,14 +1,14 @@
   package com.sayra.umai.service.impl;
 
+  import com.sayra.umai.model.entity.work.*;
   import com.sayra.umai.repo_service.AuthorDataService;
   import com.sayra.umai.repo_service.GenreDataService;
   import com.sayra.umai.repo_service.WorkDataService;
-  import com.sayra.umai.model.entity.dto.AllWorksDTO;
-  import com.sayra.umai.model.entity.dto.GenreDTO;
-  import com.sayra.umai.model.entity.work.*;
+  import com.sayra.umai.model.dto.AllWorksDTO;
+  import com.sayra.umai.model.dto.GenreDTO;
   import com.sayra.umai.model.response.*;
-  import com.sayra.umai.model.entity.dto.ChunkType;
-  import com.sayra.umai.model.entity.dto.WorkStatus;
+  import com.sayra.umai.model.dto.ChunkType;
+  import com.sayra.umai.model.dto.WorkStatus;
   import com.sayra.umai.service.*;
   import jakarta.persistence.EntityNotFoundException;
   import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.sayra.umai.model.response;
 
-import com.sayra.umai.model.entity.dto.GenreDTO;
+import com.sayra.umai.model.dto.GenreDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

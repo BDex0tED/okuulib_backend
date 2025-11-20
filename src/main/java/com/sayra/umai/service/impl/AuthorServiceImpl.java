@@ -1,8 +1,8 @@
 package com.sayra.umai.service.impl;
 
-import com.sayra.umai.model.entity.dto.AuthorDTO;
+import com.sayra.umai.model.dto.AuthorDTO;
 import com.sayra.umai.model.request.AuthorRequest;
-import com.sayra.umai.model.entity.dto.WorkDTO;
+import com.sayra.umai.model.dto.WorkDTO;
 import com.sayra.umai.model.entity.work.Author;
 import com.sayra.umai.repo_service.AuthorDataService;
 import com.sayra.umai.service.AuthorService;

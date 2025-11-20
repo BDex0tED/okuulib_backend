@@ -1,6 +1,6 @@
 package com.sayra.umai.service;
 
-import com.sayra.umai.model.entity.dto.GenreDTO;
+import com.sayra.umai.model.dto.GenreDTO;
 import com.sayra.umai.model.entity.work.Genre;
 
 import java.util.List;

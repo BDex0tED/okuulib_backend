@@ -1,6 +1,5 @@
 package com.sayra.umai.repo_service;
 
-import com.sayra.umai.model.entity.work.Author;
 import com.sayra.umai.model.entity.work.Chapter;
 import com.sayra.umai.model.entity.work.Work;
 import org.springframework.data.repository.query.Param;

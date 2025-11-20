@@ -1,4 +1,4 @@
-package com.sayra.umai.service;
+package com.sayra.umai.security.service;
 
 import com.sayra.umai.model.entity.user.Role;
 import com.sayra.umai.model.entity.user.UserEntity;

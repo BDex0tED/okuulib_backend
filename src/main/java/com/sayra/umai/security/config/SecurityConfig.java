@@ -1,7 +1,7 @@
 package com.sayra.umai.security.config;
 
 import com.sayra.umai.security.jwt.JWTFilter;
-import com.sayra.umai.service.MeninUserDetailsService;
+import com.sayra.umai.security.service.MeninUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

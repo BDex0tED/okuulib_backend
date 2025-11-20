@@ -1,6 +1,6 @@
 package com.sayra.umai.model.entity.work;
 
-import com.sayra.umai.model.entity.dto.ChunkType;
+import com.sayra.umai.model.dto.ChunkType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

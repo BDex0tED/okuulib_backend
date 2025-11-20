@@ -5,8 +5,7 @@ import com.sayra.umai.repo.GenreRepo;
 import com.sayra.umai.repo_service.GenreDataService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class GenreDataServiceImpl implements GenreDataService {
@@ -17,6 +16,7 @@ public class GenreDataServiceImpl implements GenreDataService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public Genre findByNameOrThrow(String name) {
     if(name == null || name.length() <= 1 || name.length() > 100){
       throw new IllegalArgumentException("Invalid name");
@@ -25,17 +25,20 @@ public class GenreDataServiceImpl implements GenreDataService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public Genre findByIdOrThrow(Long id) {
     return genreRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Genre with id " + id + " not found"));
   }
 
   @Override
+  @Transactional(readOnly = true)
   public boolean existsById(Long id) {
     if(id == null || id <= 0){
       throw new IllegalArgumentException("Invalid id");
     }
     return genreRepo.existsById(id);
   }
+
 
   @Override
   public void deleteById(Long id) {

@@ -8,8 +8,9 @@ import com.sayra.umai.model.entity.user.UserEntity;
 import com.sayra.umai.repo.RoleRepo;
 import com.sayra.umai.repo.UserEntityRepo;
 import com.sayra.umai.model.request.ChangePasswordRequest;
-import com.sayra.umai.config.UserAlreadyExistsException;
+import com.sayra.umai.exception.UserAlreadyExistsException;
 import com.sayra.umai.service.jwt.JWTService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -60,7 +61,7 @@ public class UserService {
     public UserEntity getCurrentUser(){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userEntityRepo.findByUsername(username).orElseThrow(
-                ()-> new IllegalStateException("User not found"));
+                ()-> new EntityNotFoundException("User not found"));
     }
 
     public UserDTO register(UserDTO userDTO){

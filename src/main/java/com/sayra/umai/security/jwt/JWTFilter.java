@@ -1,7 +1,7 @@
 package com.sayra.umai.security.jwt;
 
 import com.sayra.umai.service.jwt.JWTService;
-import com.sayra.umai.service.MeninUserDetailsService;
+import com.sayra.umai.security.service.MeninUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

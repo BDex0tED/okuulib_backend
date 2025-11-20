@@ -1,9 +1,9 @@
 package com.sayra.umai.controller;
 
-import com.sayra.umai.model.entity.dto.AllWorksDTO;
+import com.sayra.umai.model.dto.AllWorksDTO;
 import com.sayra.umai.model.response.WorkResponse;
 import com.sayra.umai.model.entity.work.Work;
-import com.sayra.umai.model.entity.dto.WorkStatus;
+import com.sayra.umai.model.dto.WorkStatus;
 import com.sayra.umai.service.impl.WorkServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

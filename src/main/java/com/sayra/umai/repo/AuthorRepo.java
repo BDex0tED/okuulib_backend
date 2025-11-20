@@ -7,7 +7,6 @@ import com.sayra.umai.model.entity.work.Author;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface AuthorRepo extends JpaRepository<Author, Long> {

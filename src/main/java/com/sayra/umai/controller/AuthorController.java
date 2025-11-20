@@ -1,6 +1,6 @@
 package com.sayra.umai.controller;
 
-import com.sayra.umai.model.entity.dto.AuthorDTO;
+import com.sayra.umai.model.dto.AuthorDTO;
 import com.sayra.umai.model.request.AuthorRequest;
 import com.sayra.umai.model.entity.work.Author;
 import com.sayra.umai.service.impl.AuthorServiceImpl;
