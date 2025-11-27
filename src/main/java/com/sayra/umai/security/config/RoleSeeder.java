@@ -43,6 +43,7 @@ public class RoleSeeder implements CommandLineRunner {
             if (!userRepo.existsByUsername(ADMIN_USERNAME)) {
                 var user = new UserEntity();
                 user.setUsername(ADMIN_USERNAME);
+                user.setEmail("okuulib.admin@okuulib.com");
                 user.setPassword(passwordEncoder.encode(ADMIN_PASSWORD));
                 user.setRoles(new java.util.ArrayList<>(java.util.Collections.singletonList(role_admin)));
                 userRepo.save(user);
