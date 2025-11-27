@@ -1,6 +1,6 @@
 package com.sayra.umai.controller;
 
-import com.sayra.umai.service.DropboxCleanupService;
+import com.sayra.umai.service.impl.DropboxCleanupServiceImpl;
 import com.sayra.umai.service.impl.DropboxServiceImpl;
 import com.sayra.umai.service.impl.UserService;
 import com.sayra.umai.service.impl.WorkServiceImpl;
@@ -17,12 +17,12 @@ import java.util.Map;
 public class DropboxController {
 
     private final DropboxServiceImpl dropboxServiceImpl;
-    private final DropboxCleanupService cleanupService;
+    private final DropboxCleanupServiceImpl cleanupService;
     private final UserService userService;
     private final WorkServiceImpl workServiceImpl;
 
     public DropboxController(DropboxServiceImpl dropboxServiceImpl,
-                             DropboxCleanupService cleanupService,
+                             DropboxCleanupServiceImpl cleanupService,
                              UserService userService,
                              WorkServiceImpl workServiceImpl) {
         this.dropboxServiceImpl = dropboxServiceImpl;

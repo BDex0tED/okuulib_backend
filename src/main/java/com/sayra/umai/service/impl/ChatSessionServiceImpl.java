@@ -45,7 +45,7 @@ public class ChatSessionServiceImpl implements ChatSessionService {
             throw new ResourceNotFoundException("User has no chat sessions");
         }
 
-        return  chatSessionMapper.toChatSessionDTO(chatSessions);
+        return chatSessionMapper.toChatSessionDTO(chatSessions);
     }
 
     @Transactional(readOnly = true)

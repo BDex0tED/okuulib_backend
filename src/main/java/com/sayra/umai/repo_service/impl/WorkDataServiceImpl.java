@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -57,7 +58,15 @@ public class WorkDataServiceImpl implements WorkDataService {
     return workRepo.findAllByAuthor_Id(authorId).stream().filter(work -> !work.getId().equals(excludeWorkId)).limit(10).toList();
   }
 
-  @Override
+    @Override
+    public List<Work> findAllById(List<Long> workIds) {
+      if(workIds == null || workIds.isEmpty()) {
+          return new ArrayList<>();
+      }
+        return workRepo.findAllById(workIds);
+    }
+
+    @Override
   @Transactional
   public Work saveWork(Work work) {
     return workRepo.save(work);

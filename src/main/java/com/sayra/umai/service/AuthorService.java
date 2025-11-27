@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface AuthorService {
   List<AuthorDTO> getAllAuthors();
-  Author save(AuthorRequest authorRequest);
+  AuthorDTO save(AuthorRequest authorRequest);
 }

@@ -15,7 +15,7 @@ public class AuthorDTO {
     private String name;
     private String bio;
     private String dateOfBirth;
-    private URL wiki;
+    private String wiki;
     private List<WorkDTO> works;
 
 }

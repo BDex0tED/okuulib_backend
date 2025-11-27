@@ -5,9 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.net.URL;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name="authors")
@@ -20,20 +18,20 @@ public class Author {
     private Long id;
 
     @Column(unique = true)
-    private URL photo;
+    private String photo;
 
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
     private String date;
     @Column()
-    private URL wiki;
+    private String wiki;
 
     @Column(columnDefinition = "text")
     private String bio;
 
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Work> works;
+    private List<Work> works;
 
 }

@@ -18,6 +18,8 @@ public interface WorkDataService {
 
   List<Work> findOtherWorksByAuthor(Long authorId, Long excludeWorkId);
 
+  List<Work> findAllById(List<Long> workIds);
+
 //  List<Work> findWorksBySearch(SearchRequest request);
 
   @Transactional

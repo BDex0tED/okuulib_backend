@@ -1,61 +1,44 @@
 package com.sayra.umai.service.impl;
 
+import com.sayra.umai.mapper.AuthorMapper;
 import com.sayra.umai.model.dto.AuthorDTO;
+import com.sayra.umai.model.entity.work.Work;
 import com.sayra.umai.model.request.AuthorRequest;
-import com.sayra.umai.model.dto.WorkDTO;
 import com.sayra.umai.model.entity.work.Author;
 import com.sayra.umai.repo_service.AuthorDataService;
+import com.sayra.umai.repo_service.WorkDataService;
 import com.sayra.umai.service.AuthorService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
     private final AuthorDataService authorDataService;
+    private final WorkDataService workDataService;
+    private final AuthorMapper authorMapper;
 
 
-    public AuthorServiceImpl(AuthorDataService authorDataService) {
+    public AuthorServiceImpl(AuthorDataService authorDataService,
+                             AuthorMapper authorMapper,
+                             WorkDataService workDataService) {
         this.authorDataService = authorDataService;
+        this.authorMapper = authorMapper;
+        this.workDataService = workDataService;
     }
 
 
   @Transactional(readOnly = true)
   @Override
   public List<AuthorDTO> getAllAuthors() {
-
-    List<Author> authors = authorDataService.findAllWithWorks();
-
-    return authors.stream()
-      .map(author -> {
-
-        List<WorkDTO> worksDTO = author.getWorks().stream()
-          .map(work -> new WorkDTO(
-            work.getId(),
-            work.getTitle(),
-            work.getDescription()
-          ))
-          .collect(Collectors.toList());
-
-        AuthorDTO dto = new AuthorDTO();
-        dto.setId(author.getId());
-        dto.setName(author.getName());
-        dto.setBio(author.getBio());
-        dto.setDateOfBirth(author.getDate());
-        dto.setWiki(author.getWiki());
-        dto.setWorks(worksDTO);
-
-        return dto;
-      })
-      .collect(Collectors.toList());
+    return authorMapper.toAuthorDTO(authorDataService.findAllWithWorks());
   }
 
 
   @Transactional
   @Override
-  public Author save(AuthorRequest authorRequest) {
+  public AuthorDTO save(AuthorRequest authorRequest) {
         if(authorRequest.getName() == null || authorRequest.getName().equals("")){
             throw new IllegalArgumentException("Author name is required");
         }
@@ -69,9 +52,12 @@ public class AuthorServiceImpl implements AuthorService {
         author.setDate(authorRequest.getDateOfBirth());
         author.setPhoto(authorRequest.getPhoto());
 //        author.setPhoto(authorInDTO.getPhoto()); should be in db then the url
-//        author.setWorks(); need to be done
+        List<Work> authorWorks = workDataService.findAllById(authorRequest.getWorkIds());
+        if(!authorWorks.isEmpty()){
+            author.setWorks(authorWorks);
+        }
         authorDataService.save(author);
-        return author;
-    }
+      return authorMapper.toAuthorDTO(author);
+  }
 
 }
