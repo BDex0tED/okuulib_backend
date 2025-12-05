@@ -12,3 +12,5 @@ spring.datasource.username=ur_user
 spring.datasource.password=ur_password
 ```
 then run ```sudo docker compose up --build``` in directory with the project
+
+peace:)
