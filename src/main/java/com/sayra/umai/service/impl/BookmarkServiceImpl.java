@@ -9,6 +9,7 @@ import com.sayra.umai.model.entity.work.Work;
 import com.sayra.umai.repo.BookmarkRepo;
 import com.sayra.umai.repo.ChapterRepo;
 import com.sayra.umai.repo.WorkRepo;
+import com.sayra.umai.repo_service.BookmarkDataService;
 import com.sayra.umai.service.BookmarkService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -24,9 +25,12 @@ public class BookmarkServiceImpl implements BookmarkService {
     private final UserEntityRepo userRepo;
     private final WorkRepo workRepo;
     private final ChapterRepo chapterRepo;
-    private final BookmarkRepo bookmarkRepo;
-    public BookmarkServiceImpl(BookmarkRepo bookmarkRepo, UserEntityRepo userRepo, WorkRepo workRepo, ChapterRepo chapterRepo) {
-        this.bookmarkRepo = bookmarkRepo;
+    private final BookmarkDataService bookmarkDataService;
+    public BookmarkServiceImpl(BookmarkDataService bookmarkDataService,
+                               UserEntityRepo userRepo,
+                               WorkRepo workRepo,
+                               ChapterRepo chapterRepo) {
+        this.bookmarkDataService = bookmarkDataService;
         this.userRepo = userRepo;
         this.workRepo = workRepo;
         this.chapterRepo = chapterRepo;
@@ -51,7 +55,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 
         bookmark.validateOffsets();
 
-        bookmarkRepo.save(bookmark);
+        bookmarkDataService.save(bookmark);
 
         return bookmarkRequest;
     }
@@ -60,7 +64,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Override
     public List<BookmarkRequest> getAllBookmarks(Principal principal) throws UserPrincipalNotFoundException {
         UserEntity user = userRepo.findByUsername(principal.getName()).orElseThrow(()->new UserPrincipalNotFoundException("User with id" + principal.getName() + " not found"));
-        List<Bookmark> bookmarks = bookmarkRepo.findAllByUser(user);
+        List<Bookmark> bookmarks = bookmarkDataService.findAllByUserOrThrow(user);
         if(bookmarks.isEmpty()){
             throw new EntityNotFoundException("User has no bookmarks");
         }
@@ -77,7 +81,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     public BookmarkRequest getBookmark(Long id, Principal principal) throws UserPrincipalNotFoundException {
         UserEntity user = userRepo.findByUsername(principal.getName()).orElseThrow(()->new UserPrincipalNotFoundException("User not found"));
 
-        Bookmark bookmark = bookmarkRepo.findByIdAndUser(id, user).orElseThrow(()->new EntityNotFoundException("Bookmark with id: "+id+" not found"));
+        Bookmark bookmark = bookmarkDataService.findByIdAndUserOrThrow(id, user);
 
         return getBookmarkInDTO(bookmark);
 
@@ -87,19 +91,19 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Override
     public void deleteBookmark(Long id, Principal principal) throws UserPrincipalNotFoundException {
         UserEntity user = userRepo.findByUsername(principal.getName()).orElseThrow(()->new UserPrincipalNotFoundException("User not found"));
-        Bookmark bookmark = bookmarkRepo.findByIdAndUser(id, user).orElseThrow(()->new EntityNotFoundException("Bookmark with id: "+id+" not found"));
-        bookmarkRepo.delete(bookmark);
+        Bookmark bookmark = bookmarkDataService.findByIdAndUserOrThrow(id, user);
+        bookmarkDataService.delete(bookmark);
     }
 
     @Transactional
     @Override
     public void deleteAllBookmarks(Principal principal) throws UserPrincipalNotFoundException {
         UserEntity user = userRepo.findByUsername(principal.getName()).orElseThrow(()->new UserPrincipalNotFoundException("User not found"));
-        List<Bookmark> bookmarks = bookmarkRepo.findAllByUser(user);
+        List<Bookmark> bookmarks = bookmarkDataService.findAllByUserOrThrow(user);
         if(bookmarks.isEmpty()){
             throw new EntityNotFoundException("User has no bookmarks");
         }
-        bookmarkRepo.deleteAll(bookmarks);
+        bookmarkDataService.deleteAllByUserOrThrow(user);
     }
 
     private static BookmarkRequest getBookmarkInDTO(Bookmark bookmark) {

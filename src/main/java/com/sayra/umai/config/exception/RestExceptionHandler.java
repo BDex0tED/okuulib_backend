@@ -1,6 +1,7 @@
 package com.sayra.umai.config.exception;
 
 import com.sayra.umai.exception.BusinessException;
+import com.sayra.umai.exception.UserNotFoundException;
 import com.sayra.umai.model.response.ErrorResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
@@ -54,6 +55,14 @@ public class RestExceptionHandler {
                 HttpStatus.NOT_FOUND
         );
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex){
+        return new ResponseEntity<>(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND
+        );
+}
 
 
 }
